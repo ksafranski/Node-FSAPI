@@ -23,7 +23,7 @@ server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
 
-// Defines request URL split /{key}/{action}/{path} 
+// Defines request URL split /{key}/{command}/{path} 
 var reqRegEx = /^\/([a-zA-Z0-9_\.~-]+)\/([a-zA-Z0-9_\.~-]+)\/(.*)/;
 
 /**
@@ -43,11 +43,37 @@ var checkKey = function (config, req, res) {
 };
 
 /**
- * GET
+ * Response Error
+ */
+ 
+var resError = function (code, res) {
+    
+    var codes = {
+        100: 'Bad path',
+        101: 'Could not read file'
+    };
+    
+    res.send({ "status": "error", "code": code, "message": codes[code] });
+    return false;
+    
+};
+
+/**
+ * Response Success
+ */
+ 
+var resSuccess = function (data, res) {
+
+    res.send({ "status": "success", "data": data });
+
+};
+
+/**
+ * GET (Read)
  * 
  * Commands:
- * ls - List files in directory
- * cat - Return file contents
+ * dir - list contents of directory
+ * file - return content of a file
  * 
  */
 server.get(reqRegEx, function (req, res, next) {
@@ -56,16 +82,23 @@ server.get(reqRegEx, function (req, res, next) {
     var path = config.base + '/' + req.params[2];
     
     switch (req.params[1]) {
-        case 'ls':
+        case 'dir':
             fs.readdir(path, function (err, files) {
-               res.send(files); 
+               if (err) {
+                   resError(100, res);
+               } else {
+                   resSuccess(files, res);
+               }
             });
             break;
         
-        case 'cat':
-            fs.readFile(path, function (err, data) {
-                console.log(data);
-                res.send(data);
+        case 'file':
+            fs.readFile(path, 'utf8', function (err, data) {
+                if (err) {
+                    resError(101, res);
+                } else {
+                    resSuccess(data, res);
+                }
             });
             break;
     }
@@ -75,11 +108,12 @@ server.get(reqRegEx, function (req, res, next) {
 });
 
 /**
- * PUT
+ * PUT (Create)
  * 
  * Commands:
- * touch - create new file (optional 'data' param contains contents)
- * mkdir - create new folder
+ * dir - creates a new directory
+ * file - creates a new file (optional param 'data' with contents of file)
+ * copy - copies a file or dirextory (to path at param 'destination')
  * 
  */
 server.put(reqRegEx, function (req, res, next) {
@@ -88,8 +122,11 @@ server.put(reqRegEx, function (req, res, next) {
 });
 
 /**
- * POST
- * cp - copy 
+ * POST (Update)
+ * 
+ * Commands:
+ * rename - renames a file or folder (using param 'name')
+ * save - saves contents to a file (using param 'data')
  * 
  */
 server.post(reqRegEx, function (req, res, next) {
@@ -98,7 +135,7 @@ server.post(reqRegEx, function (req, res, next) {
 });
 
 /**
- * DELETE
+ * DELETE 
  */
 server.del(reqRegEx, function (req, res, next) {
     res.send(req.params);
