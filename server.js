@@ -7,14 +7,15 @@ var config = {
         '67890'
     ],
     // Port designation
-    port: 8080
+    port: 8080,
+    // Base directory
+    base: 'testdir' 
 };
 
 
-// Set up Restify
-var restify = require('restify');
-
-var server = restify.createServer({
+var fs = require('fs'),
+    restify = require('restify'),
+    server = restify.createServer({
     name: 'fsapi',
     version: '0.0.1'
 });
@@ -43,15 +44,43 @@ var checkKey = function (config, req, res) {
 
 /**
  * GET
+ * 
+ * Commands:
+ * ls - List files in directory
+ * cat - Return file contents
+ * 
  */
 server.get(reqRegEx, function (req, res, next) {
     checkKey(config, req, res);
-    res.send(req.params);
+    
+    var path = config.base + '/' + req.params[2];
+    
+    switch (req.params[1]) {
+        case 'ls':
+            fs.readdir(path, function (err, files) {
+               res.send(files); 
+            });
+            break;
+        
+        case 'cat':
+            fs.readFile(path, function (err, data) {
+                console.log(data);
+                res.send(data);
+            });
+            break;
+    }
+    
+    //res.send(req.params);
     return next();
 });
 
 /**
  * PUT
+ * 
+ * Commands:
+ * touch - create new file (optional 'data' param contains contents)
+ * mkdir - create new folder
+ * 
  */
 server.put(reqRegEx, function (req, res, next) {
     res.send(req.params);
@@ -60,6 +89,8 @@ server.put(reqRegEx, function (req, res, next) {
 
 /**
  * POST
+ * cp - copy 
+ * 
  */
 server.post(reqRegEx, function (req, res, next) {
     res.send(req.params);
