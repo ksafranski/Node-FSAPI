@@ -111,6 +111,9 @@ server.get(reqRegEx, function (req, res, next) {
                     // Sort alphabetically
                     files.sort();
                     
+                    // Loop through and create two objects
+                    // 1. Directories
+                    // 2. Files
                     for (var i=0, z=files.length-1; i<=z; i++) {
                         current = path + files[i];
                         (fs.statSync(current).isSymbolicLink()) ? link = true : link = false;
@@ -135,8 +138,10 @@ server.get(reqRegEx, function (req, res, next) {
                         }
                     }
                     
+                    // Merge so we end up with alphabetical directories, then files
                     output = merge(output_dirs,output_files);
                     
+                    // Send output
                     resSuccess(output, res);
                 }
             });
