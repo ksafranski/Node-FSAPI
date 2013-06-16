@@ -105,6 +105,7 @@ server.get(reqRegEx, function (req, res, next) {
                         output_dirs = {},
                         output_files = {},
                         current,
+                        relpath,
                         type,
                         link;
                         
@@ -116,10 +117,11 @@ server.get(reqRegEx, function (req, res, next) {
                     // 2. Files
                     for (var i=0, z=files.length-1; i<=z; i++) {
                         current = path + files[i];
+                        relpath = current.replace(config.base,"");
                         (fs.lstatSync(current).isSymbolicLink()) ? link = true : link = false;
                         if (fs.lstatSync(current).isDirectory()) {
                             output_dirs[files[i]] = { 
-                                path: current,
+                                path: relpath,
                                 type: 'directory',
                                 size: fs.lstatSync(current).size,
                                 atime: fs.lstatSync(current).atime.getTime(),
@@ -128,7 +130,7 @@ server.get(reqRegEx, function (req, res, next) {
                             };
                         } else {
                            output_files[files[i]] = { 
-                                path: current,
+                                path: relpath,
                                 type: 'file',
                                 size: fs.lstatSync(current).size,
                                 atime: fs.lstatSync(current).atime.getTime(),
