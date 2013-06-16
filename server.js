@@ -116,23 +116,23 @@ server.get(reqRegEx, function (req, res, next) {
                     // 2. Files
                     for (var i=0, z=files.length-1; i<=z; i++) {
                         current = path + files[i];
-                        (fs.statSync(current).isSymbolicLink()) ? link = true : link = false;
-                        if (fs.statSync(current).isDirectory()) {
+                        (fs.lstatSync(current).isSymbolicLink()) ? link = true : link = false;
+                        if (fs.lstatSync(current).isDirectory()) {
                             output_dirs[files[i]] = { 
                                 path: current,
                                 type: 'directory',
-                                size: fs.statSync(current).size,
-                                atime: fs.statSync(current).atime.getTime(),
-                                mtime: fs.statSync(current).mtime.getTime(),
+                                size: fs.lstatSync(current).size,
+                                atime: fs.lstatSync(current).atime.getTime(),
+                                mtime: fs.lstatSync(current).mtime.getTime(),
                                 link: link
                             };
                         } else {
                            output_files[files[i]] = { 
                                 path: current,
                                 type: 'file',
-                                size: fs.statSync(current).size,
-                                atime: fs.statSync(current).atime.getTime(),
-                                mtime: fs.statSync(current).mtime.getTime(),
+                                size: fs.lstatSync(current).size,
+                                atime: fs.lstatSync(current).atime.getTime(),
+                                mtime: fs.lstatSync(current).mtime.getTime(),
                                 link: link
                             };                            
                         }
