@@ -108,7 +108,19 @@ server.get(reqRegEx, function (req, res, next) {
                         relpath,
                         type,
                         link;
-                        
+
+                    // Function to build item for output objects
+                    var createItem = function (current, relpath, type, link) {
+                        return {
+                            path: relpath,
+                            type: type,
+                            size: fs.lstatSync(current).size,
+                            atime: fs.lstatSync(current).atime.getTime(),
+                            mtime: fs.lstatSync(current).mtime.getTime(),
+                            link: link
+                        };
+                    };
+                    
                     // Sort alphabetically
                     files.sort();
                     
@@ -120,23 +132,9 @@ server.get(reqRegEx, function (req, res, next) {
                         relpath = current.replace(config.base,"");
                         (fs.lstatSync(current).isSymbolicLink()) ? link = true : link = false;
                         if (fs.lstatSync(current).isDirectory()) {
-                            output_dirs[files[i]] = { 
-                                path: relpath,
-                                type: 'directory',
-                                size: fs.lstatSync(current).size,
-                                atime: fs.lstatSync(current).atime.getTime(),
-                                mtime: fs.lstatSync(current).mtime.getTime(),
-                                link: link
-                            };
+                            output_dirs[files[i]] = createItem(current,relpath,'directory',link);
                         } else {
-                           output_files[files[i]] = { 
-                                path: relpath,
-                                type: 'file',
-                                size: fs.lstatSync(current).size,
-                                atime: fs.lstatSync(current).atime.getTime(),
-                                mtime: fs.lstatSync(current).mtime.getTime(),
-                                link: link
-                            };                            
+                            output_files[files[i]] = createItem(current,relpath,'file',link);                            
                         }
                     }
                     
