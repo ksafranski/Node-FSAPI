@@ -6,6 +6,10 @@ var config = {
         '12345',
         '67890'
     ],
+    // Allowed IP's or ranges ('*.*.*.*' - allow all)
+    ips: [
+        '*.*.*.*'
+    ],
     // Port designation
     port: 8080,
     // Base directory
@@ -30,16 +34,52 @@ var reqRegEx = /^\/([a-zA-Z0-9_\.~-]+)\/([a-zA-Z0-9_\.~-]+)\/(.*)/;
  * Check Key
  */
  
-var checkKey = function (config, req, res) {
+var checkKey = function (config, req) {
     // Loop through keys in config
     for (var i = 0, z = config.keys.length; i < z; i++) {
         if (config.keys[i] === req.params[0]) {
             return true;
         }
     }
-    // Failed key, 401 - Unauthorized
-    res.send(401);
     return false;
+};
+
+/**
+ * Check IP
+ */
+ 
+var checkIP = function (config, req) {
+    var ip = req.connection.remoteAddress.split('.'),
+        curIP,
+        b,
+        block = [];
+    for (var i=0, z=config.ips.length-1; i<=z; i++) {
+        curIP = config.ips[i].split('.');
+        b = 0;
+        // Compare each block
+        while (b<=3) {
+            (curIP[b]===ip[b] || curIP[b]==='*') ? block[b] = true : block[b] = false;
+            b++;
+        }
+        // Check all blocks
+        if (block[0] && block[1] && block[2] && block[3]) {
+            return true;
+        }
+    }
+    return false;
+};
+ 
+
+/**
+ * Check Request
+ */
+ 
+var checkReq = function (config, req, res) {
+    if(!checkKey(config, req) || !checkIP(config, req)) {
+        res.send(401);
+        return false;
+    }
+    return true;
 };
 
 /**
@@ -91,7 +131,8 @@ var merge = function (obj1,obj2) {
  */
 server.get(reqRegEx, function (req, res, next) {
     
-    checkKey(config, req, res);
+    // Check request
+    checkReq(config, req, res);
     
     var path = config.base + '/' + req.params[2];
     
