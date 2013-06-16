@@ -6,10 +6,21 @@ var config = {
         '12345',
         '67890'
     ],
-    // Allowed IP's or ranges ('*.*.*.*' - allow all)
+    /**
+     * Allowed IP's or ranges
+     * Can use * for wildcards, *.*.*.* for no restrictions
+     */
     ips: [
         '*.*.*.*'
     ],
+    /**
+     * SSL Config
+     * Set key and cert to absolute path if SSL used, false if not
+     */
+    ssl: {
+        key: false,
+        cert: false
+    },
     // Port designation
     port: 8080,
     // Base directory
@@ -19,14 +30,39 @@ var config = {
 
 var fs = require('fs'),
     restify = require('restify'),
+    server;
+
+// Determine if SSL is used
+if (config.ssl.key && config.ssl.cert) {
+    
+    // Get CERT
+    var https = {
+        certificate: fs.readFileSync(config.ssl.cert),
+        key: fs.readFileSync(config.ssl.key)
+    };
+    
+    // Config server with SSL
     server = restify.createServer({
-    name: 'fsapi',
-    version: '0.0.1'
-});
+        name: 'fsapi',
+        certificate: https.certificate,
+        key: https.key
+    });
+    
+} else {
+    
+    // Config non-SSL Server
+    server = restify.createServer({
+        name: 'fsapi'
+    });
+    
+}
+
+// Additional server config
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
 
+// Regular Expressions
 var commandRegEx = /^\/([a-zA-Z0-9_\.~-]+)\/([a-zA-Z0-9_\.~-]+)\/(.*)/,  // /{key}/{command}/{path}
     pathRegEx = /^\/([a-zA-Z0-9_\.~-]+)\/(.*)/;  // /{key}/{path}
 
