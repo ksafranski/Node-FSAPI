@@ -49,8 +49,9 @@ var checkKey = function (config, req, res) {
 var resError = function (code, raw, res) {
     
     var codes = {
-        100: 'Bad path',
-        101: 'Could not read file'
+        100: 'Unknown command',
+        101: 'Bad path',
+        102: 'Could not read file'
     };
     
     res.send({ "status": "error", "code": code, "message": codes[code], "raw": raw });
@@ -98,7 +99,7 @@ server.get(reqRegEx, function (req, res, next) {
         case 'dir':
             fs.readdir(path, function (err, files) {
                 if (err) {
-                    resError(100, err, res);
+                    resError(101, err, res);
                 } else {
                     
                     // Ensure ending slash on path
@@ -153,12 +154,16 @@ server.get(reqRegEx, function (req, res, next) {
         case 'file':
             fs.readFile(path, 'utf8', function (err, data) {
                 if (err) {
-                    resError(101, err, res);
+                    resError(102, err, res);
                 } else {
                     resSuccess(data, res);
                 }
             });
             break;
+            
+        default:
+            // Unknown command
+            resError(100, null, res);
     }
     
     //res.send(req.params);
