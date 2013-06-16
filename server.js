@@ -24,7 +24,9 @@ var config = {
     // Port designation
     port: 8080,
     // Base directory
-    base: 'testdir' 
+    base: 'testdir',
+    // Default create mode
+    cmode: '0644'
 };
 
 
@@ -254,7 +256,7 @@ server.get(commandRegEx, function (req, res, next) {
  * 
  * Commands:
  * dir - creates a new directory
- * file - creates a new file (optional param 'data' with contents of file)
+ * file - creates a new file
  * copy - copies a file or dirextory (to path at param 'destination')
  * 
  */
@@ -270,17 +272,20 @@ server.put(commandRegEx, function (req, res, next) {
         
         // Creates a new directory
         case 'dir':
-            
+            // @TODO - check base path exists
+            fs.mkdir(path, config.cmode, function () {
+                resSuccess(null, res);
+            });
             break;
         
         // Creates a new file
         case 'file':
-            
+            console.log(req.params);
             break;
         
         // Copies a file or directory
         case 'copy':
-            
+            console.log(req.params);
             break;
             
         default:
