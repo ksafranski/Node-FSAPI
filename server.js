@@ -46,14 +46,14 @@ var checkKey = function (config, req, res) {
  * Response Error
  */
  
-var resError = function (code, res) {
+var resError = function (code, raw, res) {
     
     var codes = {
         100: 'Bad path',
         101: 'Could not read file'
     };
     
-    res.send({ "status": "error", "code": code, "message": codes[code] });
+    res.send({ "status": "error", "code": code, "message": codes[code], "raw": raw });
     return false;
     
 };
@@ -69,6 +69,18 @@ var resSuccess = function (data, res) {
 };
 
 /**
+ * Merge function
+ */
+
+var merge = function (obj1,obj2) {
+    var mobj = {},
+        attrname;
+    for (attrname in obj1) { mobj[attrname] = obj1[attrname]; }
+    for (attrname in obj2) { mobj[attrname] = obj2[attrname]; }
+    return mobj;
+};
+
+/**
  * GET (Read)
  * 
  * Commands:
@@ -77,6 +89,7 @@ var resSuccess = function (data, res) {
  * 
  */
 server.get(reqRegEx, function (req, res, next) {
+    
     checkKey(config, req, res);
     
     var path = config.base + '/' + req.params[2];
@@ -84,18 +97,55 @@ server.get(reqRegEx, function (req, res, next) {
     switch (req.params[1]) {
         case 'dir':
             fs.readdir(path, function (err, files) {
-               if (err) {
-                   resError(100, res);
-               } else {
-                   resSuccess(files, res);
-               }
+                if (err) {
+                    resError(100, err, res);
+                } else {
+                
+                    var output = {},
+                        output_dirs = {},
+                        output_files = {},
+                        current,
+                        type,
+                        link;
+                        
+                    // Sort alphabetically
+                    files.sort();
+                    
+                    for (var i=0, z=files.length-1; i<=z; i++) {
+                        current = path + files[i];
+                        (fs.statSync(current).isSymbolicLink()) ? link = true : link = false;
+                        if (fs.statSync(current).isDirectory()) {
+                            output_dirs[files[i]] = { 
+                                path: current,
+                                type: 'directory',
+                                size: fs.statSync(current).size,
+                                atime: fs.statSync(current).atime.getTime(),
+                                mtime: fs.statSync(current).mtime.getTime(),
+                                link: link
+                            };
+                        } else {
+                           output_files[files[i]] = { 
+                                path: current,
+                                type: 'file',
+                                size: fs.statSync(current).size,
+                                atime: fs.statSync(current).atime.getTime(),
+                                mtime: fs.statSync(current).mtime.getTime(),
+                                link: link
+                            };                            
+                        }
+                    }
+                    
+                    output = merge(output_dirs,output_files);
+                    
+                    resSuccess(output, res);
+                }
             });
             break;
         
         case 'file':
             fs.readFile(path, 'utf8', function (err, data) {
                 if (err) {
-                    resError(101, res);
+                    resError(101, err, res);
                 } else {
                     resSuccess(data, res);
                 }
