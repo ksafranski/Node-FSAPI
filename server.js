@@ -288,7 +288,7 @@ server.put(commandRegEx, function (req, res, next) {
             
             // Ensure base path
             if (checkPath(path)) {
-                // Base path exists, mkdir
+                // Base path exists, create directory
                 fs.mkdir(path, config.cmode, function () {
                     resSuccess(null, res);
                 });
@@ -300,7 +300,15 @@ server.put(commandRegEx, function (req, res, next) {
         
         // Creates a new file
         case 'file':
-            console.log(req.params);
+            // Ensure base path
+            if (checkPath(path)) {
+                // Base path exists, create file
+                fs.openSync(path, 'w');
+                resSuccess(null, res);
+            } else {
+                // Bad base path
+                resError(103, null, res);
+            }
             break;
         
         // Copies a file or directory
