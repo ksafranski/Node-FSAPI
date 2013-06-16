@@ -100,6 +100,9 @@ server.get(reqRegEx, function (req, res, next) {
                 if (err) {
                     resError(100, err, res);
                 } else {
+                    
+                    // Ensure ending slash on path
+                    (path.slice(-1)!=='/') ? path = path + '/' : path = path;
                 
                     var output = {},
                         output_dirs = {},
