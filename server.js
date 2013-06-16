@@ -31,9 +31,8 @@ server.use(restify.bodyParser());
 var reqRegEx = /^\/([a-zA-Z0-9_\.~-]+)\/([a-zA-Z0-9_\.~-]+)\/(.*)/;
 
 /**
- * Check Key
+ * Check Key (Called by checkReq)
  */
- 
 var checkKey = function (config, req) {
     // Loop through keys in config
     for (var i = 0, z = config.keys.length; i < z; i++) {
@@ -45,7 +44,7 @@ var checkKey = function (config, req) {
 };
 
 /**
- * Check IP
+ * Check IP (Called by checkReq)
  */
  
 var checkIP = function (config, req) {
@@ -72,6 +71,7 @@ var checkIP = function (config, req) {
 
 /**
  * Check Request
+ * Checks Key and IP Address
  */
  
 var checkReq = function (config, req, res) {
@@ -90,7 +90,7 @@ var resError = function (code, raw, res) {
     
     var codes = {
         100: 'Unknown command',
-        101: 'Bad path',
+        101: 'Could not list files',
         102: 'Could not read file'
     };
     
@@ -134,6 +134,7 @@ server.get(reqRegEx, function (req, res, next) {
     // Check request
     checkReq(config, req, res);
     
+    // Set path
     var path = config.base + '/' + req.params[2];
     
     switch (req.params[1]) {
