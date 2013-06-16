@@ -161,6 +161,18 @@ var merge = function (obj1,obj2) {
 };
 
 /**
+ * Check Path
+ */
+ 
+var checkPath = function (path) {
+    var base_path = path.split('/');
+        base_path.pop();
+        base_path = base_path.join('/');
+        
+    return fs.existsSync(base_path);
+};
+
+/**
  * GET (Read)
  * 
  * Commands:
@@ -273,18 +285,17 @@ server.put(commandRegEx, function (req, res, next) {
         
         // Creates a new directory
         case 'dir':
-            var base_path = path.split('/');
-            base_path.pop();
-            base_path = base_path.join('/');
-            fs.exists(base_path, function (exists) {
-                if (exists) {
-                    fs.mkdir(path, config.cmode, function () {
-                        resSuccess(null, res);
-                    });
-                } else {
-                    resError(103, null, res);
-                }
-            });
+            
+            // Ensure base path
+            if (checkPath(path)) {
+                // Base path exists, mkdir
+                fs.mkdir(path, config.cmode, function () {
+                    resSuccess(null, res);
+                });
+            } else {
+                // Bad base path
+                resError(103, null, res);
+            }
             break;
         
         // Creates a new file
