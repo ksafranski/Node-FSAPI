@@ -27,8 +27,8 @@ server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
 
-// Defines request URL split /{key}/{command}/{path} 
-var reqRegEx = /^\/([a-zA-Z0-9_\.~-]+)\/([a-zA-Z0-9_\.~-]+)\/(.*)/;
+var commandRegEx = /^\/([a-zA-Z0-9_\.~-]+)\/([a-zA-Z0-9_\.~-]+)\/(.*)/,  // /{key}/{command}/{path}
+    pathRegEx = /^\/([a-zA-Z0-9_\.~-]+)\/(.*)/;  // /{key}/{path}
 
 /**
  * Check Key (Called by checkReq)
@@ -129,7 +129,7 @@ var merge = function (obj1,obj2) {
  * file - return content of a file
  * 
  */
-server.get(reqRegEx, function (req, res, next) {
+server.get(commandRegEx, function (req, res, next) {
     
     // Check request
     checkReq(config, req, res);
@@ -138,6 +138,7 @@ server.get(reqRegEx, function (req, res, next) {
     var path = config.base + '/' + req.params[2];
     
     switch (req.params[1]) {
+        // List contents of directory
         case 'dir':
             fs.readdir(path, function (err, files) {
                 if (err) {
@@ -193,6 +194,7 @@ server.get(reqRegEx, function (req, res, next) {
             });
             break;
         
+        // Return contents of requested file
         case 'file':
             fs.readFile(path, 'utf8', function (err, data) {
                 if (err) {
@@ -207,8 +209,7 @@ server.get(reqRegEx, function (req, res, next) {
             // Unknown command
             resError(100, null, res);
     }
-    
-    //res.send(req.params);
+
     return next();
 });
 
@@ -221,8 +222,36 @@ server.get(reqRegEx, function (req, res, next) {
  * copy - copies a file or dirextory (to path at param 'destination')
  * 
  */
-server.put(reqRegEx, function (req, res, next) {
-    res.send(req.params);
+server.put(commandRegEx, function (req, res, next) {
+    
+    // Check request
+    checkReq(config, req, res);
+    
+    // Set path
+    var path = config.base + '/' + req.params[2];
+    
+    switch (req.params[1]) {
+        
+        // Creates a new directory
+        case 'dir':
+            
+            break;
+        
+        // Creates a new file
+        case 'file':
+            
+            break;
+        
+        // Copies a file or directory
+        case 'copy':
+            
+            break;
+            
+        default:
+            // Unknown command
+            resError(100, null, res);
+    }
+    
     return next();
 });
 
@@ -234,17 +263,47 @@ server.put(reqRegEx, function (req, res, next) {
  * save - saves contents to a file (using param 'data')
  * 
  */
-server.post(reqRegEx, function (req, res, next) {
-    res.send(req.params);
+server.post(commandRegEx, function (req, res, next) {
+    
+    // Check request
+    checkReq(config, req, res);
+    
+    // Set path
+    var path = config.base + '/' + req.params[2];
+    
+    switch (req.params[1]) {
+        
+        // Rename a file or directory
+        case 'rename':
+            
+            break;
+        
+        // Saves contents to a file
+        case 'save':
+            
+            break;
+        
+            
+        default:
+            // Unknown command
+            resError(100, null, res);
+    }
+    
     return next();
+    
 });
 
 /**
  * DELETE 
  */
-server.del(reqRegEx, function (req, res, next) {
-    res.send(req.params);
-    return next();
+server.del(pathRegEx, function (req, res, next) {
+    
+    // Check request
+    checkReq(config, req, res);
+    
+    // Set path
+    var path = config.base + '/' + req.params[1];
+    
 });
 
 /**
