@@ -26,7 +26,7 @@ var config = {
     // Base directory
     base: 'testdir',
     // Default create mode
-    cmode: '0644'
+    cmode: '0755'
 };
 
 
@@ -129,7 +129,8 @@ var resError = function (code, raw, res) {
     var codes = {
         100: 'Unknown command',
         101: 'Could not list files',
-        102: 'Could not read file'
+        102: 'Could not read file',
+        103: 'Path does not exist'
     };
     
     res.send({ "status": "error", "code": code, "message": codes[code], "raw": raw });
@@ -272,9 +273,17 @@ server.put(commandRegEx, function (req, res, next) {
         
         // Creates a new directory
         case 'dir':
-            // @TODO - check base path exists
-            fs.mkdir(path, config.cmode, function () {
-                resSuccess(null, res);
+            var base_path = path.split('/');
+            base_path.pop();
+            base_path = base_path.join('/');
+            fs.exists(base_path, function (exists) {
+                if (exists) {
+                    fs.mkdir(path, config.cmode, function () {
+                        resSuccess(null, res);
+                    });
+                } else {
+                    resError(103, null, res);
+                }
             });
             break;
         
