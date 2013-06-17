@@ -5,8 +5,8 @@ GET (Read), PUT (Create), POST (Update), and DELETE (Delete) commands with a pla
 
 ## Getting Started
 
-FSAPI provides a single-file `server.js` node controller with 2 dependencies - [Restify](http://mcavage.github.io/node-restify) 
-and [node-fs](http://nodejs.org/api/fs.html). The file contains a `config` object which allows for easy configuration.
+FSAPI provides a single-file `server.js` node controller with 2 core dependencies - [Restify](http://mcavage.github.io/node-restify) 
+and [node-fs-extra](https://github.com/jprichardson/node-fs-extra). The file contains a `config` object which allows for easy configuration.
 
 ### Security
 

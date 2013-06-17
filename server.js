@@ -30,7 +30,7 @@ var config = {
 };
 
 
-var fs = require('fs'),
+var fs = require('fs-extra'),
     restify = require('restify'),
     server;
 
@@ -130,7 +130,8 @@ var resError = function (code, raw, res) {
         100: 'Unknown command',
         101: 'Could not list files',
         102: 'Could not read file',
-        103: 'Path does not exist'
+        103: 'Path does not exist',
+        104: 'Could not create copy'
     };
     
     res.send({ "status": "error", "code": code, "message": codes[code], "raw": raw });
@@ -312,8 +313,23 @@ server.put(commandRegEx, function (req, res, next) {
             break;
         
         // Copies a file or directory
+        // Supply destination as full path with file or folder name at end
+        // Ex: http://yourserver.com/{key}/copy/folder_a/somefile.txt, destination: /folder_b/somefile.txt
         case 'copy':
-            console.log(req.params);
+            var destination = config.base + '/' + req.params.destination;
+            if (checkPath(path) && checkPath(destination)) {
+                fs.copy(path, destination, function(err){
+                    if (err) {
+                        resError(104, err, res);
+                    }
+                    else {
+                        resSuccess(null, res);
+                    }
+                });
+            } else {
+                // Bad base path
+                resError(103, null, res);
+            }
             break;
             
         default:
