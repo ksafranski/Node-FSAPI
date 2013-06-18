@@ -23,19 +23,31 @@ var fsapi = {
     },
     
     /**
+     * Validate
+     * 
+     * Parse and validate responses
+     */
+     
+    validate: function (data) {
+        
+    },
+    
+    /**
      * Create (PUT)
      */
     
     // Create handler
     create: function (path, type) {
+        var _this = this;
         this.ajax({
             url: this.config.url() + '/' + this.config().key + '/' + type + '/' + path,
             type: 'GET',
             success: function (data) {
-                return data;
+                _this.validate(data);
             },
             error: function () {
                 console.error('FSAPI CONNECT ERROR');
+                return false;
             }
         });
     },
