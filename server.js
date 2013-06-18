@@ -162,14 +162,22 @@ var merge = function (obj1,obj2) {
 };
 
 /**
+ * Get Base Path
+ */
+
+var getBasePath = function (path) {
+    var base_path = path.split('/');
+        
+    base_path.pop();
+    return base_path.join('/');
+};
+
+/**
  * Check Path
  */
  
 var checkPath = function (path) {
-    var base_path = path.split('/');
-        base_path.pop();
-        base_path = base_path.join('/');
-        
+    var base_path = getBasePath(path);
     return fs.existsSync(base_path);
 };
 
@@ -360,6 +368,12 @@ server.post(commandRegEx, function (req, res, next) {
         
         // Rename a file or directory
         case 'rename':
+            
+            var base_path = getBasePath(path);
+            
+            fs.rename(path,base_path + '/' + req.params.name, function () {
+                resSuccess(null, res);
+            });
             
             break;
         
