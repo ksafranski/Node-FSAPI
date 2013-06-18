@@ -15,3 +15,91 @@ The server provides 3 levels of security:
 1. Key-Based: Each request requires a key be submitted in the URL
 2. IP Restrictions: Supports specific IP addresses and ranges using wildcards (`*`)
 3. HTTPS Support: Simply supplying a PEM-encoded key and certificate file will require HTTPS requests
+
+### Configuration
+
+The server uses a `config` object to easily setup how it will run:
+
+**Keys**
+
+The `config.keys` array simply contains a list of keys that get sent along with the request.
+
+**IP Restrictions**
+
+The `config.ips` array allows providing a list of allowed IP addresses and ranges. Several format examples are:
+
+```
+"*.*.*.*"      // Allow all IP's through
+"192.168.*.*"  // Allow only IP's on the 192.168.(...) range to make requests
+"192.168.1.1"  // Allow only the specific address to make requests
+```
+
+**SSL Certificate**
+
+An SSL Certificate can be supplied by providing a PEM-encoded `key` and `cert`. Setting either or both of these properties to `false` results in no SSL.
+
+**Port**
+
+The `config.port` property sets the server port to be used.
+
+**Base Directory**
+
+The `config.base` property sets the base (or root) directory where files will reside. This is relative to the server file.
+
+**Create Mode**
+
+The `config.cmode` sets the permissions that will be applied on file creation. Default is `0755`.
+
+## Usage
+
+Requests to the server are made via RESTful methods - GET, PUT, POST and DELETE. Below is a breakdown of the methods and their associated methods:
+
+### GET (Read)
+
+**Directory Listing**
+
+`GET => {server}:{port}/{key}/dir/{path}`
+
+**Read File**
+
+`GET => {server}:{port}/{key}/file/{path}`
+
+### PUT (Create)
+
+**Create Directory**
+
+`PUT => {server}:{port}/{key}/dir/{path}`
+
+**Create File**
+
+`PUT => {server}:{port}/{key}/file/{path}`
+
+**Copy Directory or File**
+
+`PUT => {server}:{port}/{key}/copy/{path}`
+
+PUT parameter `destination` required with the FULL detination path
+
+### POST (Update)
+
+**Rename File or Directory**
+
+`POST => {server}:{port}/{key}/rename/{path}`
+
+POST parameter `name` required with the new file or directory name (no path required)
+
+**Save Contents to File**
+
+`POST => {server}:{port}/{key}/save/{path}`
+
+POST parameter `data` is required with the contents to be saved
+
+### DELETE
+
+**Delete a File or Directory**
+
+`DELETE => {server}:{port}/{key}/{path}`
+
+## Responses
+
+Coming Soon...
