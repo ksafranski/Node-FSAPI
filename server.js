@@ -430,11 +430,11 @@ server.del(pathRegEx, function (req, res, next) {
     if (fs.existsSync(path)) {
         // Remove file or directory
         fs.remove(path, function (err) {
-           if (err) {
-               resError(108, err, res);
-           } else {
-               resSuccess(null, res);
-           }
+            if (err) {
+                resError(108, err, res);
+            } else {
+                resSuccess(null, res);
+            }
         });
     } else {
         resError(103, null, res);
