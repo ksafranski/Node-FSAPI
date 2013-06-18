@@ -102,4 +102,32 @@ POST parameter `data` is required with the contents to be saved
 
 ## Responses
 
-Coming Soon...
+### Authentication Failure
+
+All authentication failures will result in an http 401 status (Not Authorized)
+
+### Success Response
+
+On a successful request the server will respond with the following JSON formatted return:
+
+```
+{
+  "status": "success",
+  "data": "{any return data}"
+}
+```
+
+Most successful responses will contain `null` for data.
+
+### Error Response
+
+On an erroroneous request the server will respond with the following JSON formatted return:
+
+```
+{
+  "status": "error",
+  "code": "{3-digit error response code}",
+  "message": "{brief explanation of error condition}",
+  "raw": "{raw error message from node}"
+}
+```
