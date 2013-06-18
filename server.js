@@ -134,7 +134,8 @@ var resError = function (code, raw, res) {
         104: 'Could not create copy',
         105: 'File does not exist',
         106: 'Not a file',
-        107: 'Could not write to file'
+        107: 'Could not write to file',
+        108: 'Could not delete object'
     };
     
     res.send({ "status": "error", "code": code, "message": codes[code], "raw": raw });
@@ -424,6 +425,20 @@ server.del(pathRegEx, function (req, res, next) {
     
     // Set path
     var path = config.base + '/' + req.params[1];
+    
+    // Make sure it exists
+    if (fs.existsSync(path)) {
+        // Remove file or directory
+        fs.remove(path, function (err) {
+           if (err) {
+               resError(108, err, res);
+           } else {
+               resSuccess(null, res);
+           }
+        });
+    } else {
+        resError(103, null, res);
+    }
     
 });
 
