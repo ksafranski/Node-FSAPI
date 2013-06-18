@@ -131,7 +131,10 @@ var resError = function (code, raw, res) {
         101: 'Could not list files',
         102: 'Could not read file',
         103: 'Path does not exist',
-        104: 'Could not create copy'
+        104: 'Could not create copy',
+        105: 'File does not exist',
+        106: 'Not a file',
+        107: 'Could not write to file'
     };
     
     res.send({ "status": "error", "code": code, "message": codes[code], "raw": raw });
@@ -379,6 +382,25 @@ server.post(commandRegEx, function (req, res, next) {
         
         // Saves contents to a file
         case 'save':
+            
+            // Make sure it exists
+            if (fs.existsSync(path)) {
+                // Make sure it's a file
+                if (!fs.lstatSync(path).isDirectory()) {
+                    // Write
+                    fs.writeFile(path, req.params.data, function(err) {
+                        if(err) {
+                            resError(107, err, res);
+                        } else {
+                            resSuccess(null, res);
+                        }
+                    });
+                } else {
+                    resError(106, null, res);
+                }
+            } else {
+                resError(105, null, res);
+            }
             
             break;
         
