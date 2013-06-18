@@ -3,15 +3,15 @@
 var config = {
     // Authentication keys
     keys: [
-        '12345',
-        '67890'
+        "12345",
+        "67890"
     ],
     /**
      * Allowed IP's or ranges
      * Can use * for wildcards, *.*.*.* for no restrictions
      */
     ips: [
-        '*.*.*.*'
+        "*.*.*.*"
     ],
     /**
      * SSL Config
@@ -24,14 +24,14 @@ var config = {
     // Port designation
     port: 8080,
     // Base directory
-    base: 'testdir',
+    base: "testdir",
     // Default create mode
-    cmode: '0755'
+    cmode: "0755"
 };
 
 
-var fs = require('fs-extra'),
-    restify = require('restify'),
+var fs = require("fs-extra"),
+    restify = require("restify"),
     server;
 
 // Determine if SSL is used
@@ -45,7 +45,7 @@ if (config.ssl.key && config.ssl.cert) {
     
     // Config server with SSL
     server = restify.createServer({
-        name: 'fsapi',
+        name: "fsapi",
         certificate: https.certificate,
         key: https.key
     });
@@ -54,7 +54,7 @@ if (config.ssl.key && config.ssl.cert) {
     
     // Config non-SSL Server
     server = restify.createServer({
-        name: 'fsapi'
+        name: "fsapi"
     });
     
 }
@@ -86,16 +86,16 @@ var checkKey = function (config, req) {
  */
  
 var checkIP = function (config, req) {
-    var ip = req.connection.remoteAddress.split('.'),
+    var ip = req.connection.remoteAddress.split("."),
         curIP,
         b,
         block = [];
     for (var i=0, z=config.ips.length-1; i<=z; i++) {
-        curIP = config.ips[i].split('.');
+        curIP = config.ips[i].split(".");
         b = 0;
         // Compare each block
         while (b<=3) {
-            (curIP[b]===ip[b] || curIP[b]==='*') ? block[b] = true : block[b] = false;
+            (curIP[b]===ip[b] || curIP[b]==="*") ? block[b] = true : block[b] = false;
             b++;
         }
         // Check all blocks
@@ -127,15 +127,15 @@ var checkReq = function (config, req, res) {
 var resError = function (code, raw, res) {
     
     var codes = {
-        100: 'Unknown command',
-        101: 'Could not list files',
-        102: 'Could not read file',
-        103: 'Path does not exist',
-        104: 'Could not create copy',
-        105: 'File does not exist',
-        106: 'Not a file',
-        107: 'Could not write to file',
-        108: 'Could not delete object'
+        100: "Unknown command",
+        101: "Could not list files",
+        102: "Could not read file",
+        103: "Path does not exist",
+        104: "Could not create copy",
+        105: "File does not exist",
+        106: "Not a file",
+        107: "Could not write to file",
+        108: "Could not delete object"
     };
     
     res.send({ "status": "error", "code": code, "message": codes[code], "raw": raw });
@@ -170,10 +170,10 @@ var merge = function (obj1,obj2) {
  */
 
 var getBasePath = function (path) {
-    var base_path = path.split('/');
+    var base_path = path.split("/");
         
     base_path.pop();
-    return base_path.join('/');
+    return base_path.join("/");
 };
 
 /**
@@ -199,25 +199,24 @@ server.get(commandRegEx, function (req, res, next) {
     checkReq(config, req, res);
     
     // Set path
-    var path = config.base + '/' + req.params[2];
+    var path = config.base + "/" + req.params[2];
     
     switch (req.params[1]) {
         // List contents of directory
-        case 'dir':
+        case "dir":
             fs.readdir(path, function (err, files) {
                 if (err) {
                     resError(101, err, res);
                 } else {
                     
                     // Ensure ending slash on path
-                    (path.slice(-1)!=='/') ? path = path + '/' : path = path;
+                    (path.slice(-1)!=="/") ? path = path + "/" : path = path;
                 
                     var output = {},
                         output_dirs = {},
                         output_files = {},
                         current,
                         relpath,
-                        type,
                         link;
 
                     // Function to build item for output objects
@@ -243,9 +242,9 @@ server.get(commandRegEx, function (req, res, next) {
                         relpath = current.replace(config.base,"");
                         (fs.lstatSync(current).isSymbolicLink()) ? link = true : link = false;
                         if (fs.lstatSync(current).isDirectory()) {
-                            output_dirs[files[i]] = createItem(current,relpath,'directory',link);
+                            output_dirs[files[i]] = createItem(current,relpath,"directory",link);
                         } else {
-                            output_files[files[i]] = createItem(current,relpath,'file',link);                            
+                            output_files[files[i]] = createItem(current,relpath,"file",link);                            
                         }
                     }
                     
@@ -259,8 +258,8 @@ server.get(commandRegEx, function (req, res, next) {
             break;
         
         // Return contents of requested file
-        case 'file':
-            fs.readFile(path, 'utf8', function (err, data) {
+        case "file":
+            fs.readFile(path, "utf8", function (err, data) {
                 if (err) {
                     resError(102, err, res);
                 } else {
@@ -283,7 +282,7 @@ server.get(commandRegEx, function (req, res, next) {
  * Commands:
  * dir - creates a new directory
  * file - creates a new file
- * copy - copies a file or dirextory (to path at param 'destination')
+ * copy - copies a file or dirextory (to path at param "destination")
  * 
  */
 server.put(commandRegEx, function (req, res, next) {
@@ -292,12 +291,12 @@ server.put(commandRegEx, function (req, res, next) {
     checkReq(config, req, res);
     
     // Set path
-    var path = config.base + '/' + req.params[2];
+    var path = config.base + "/" + req.params[2];
     
     switch (req.params[1]) {
         
         // Creates a new directory
-        case 'dir':
+        case "dir":
             
             // Ensure base path
             if (checkPath(path)) {
@@ -312,11 +311,11 @@ server.put(commandRegEx, function (req, res, next) {
             break;
         
         // Creates a new file
-        case 'file':
+        case "file":
             // Ensure base path
             if (checkPath(path)) {
                 // Base path exists, create file
-                fs.openSync(path, 'w');
+                fs.openSync(path, "w");
                 resSuccess(null, res);
             } else {
                 // Bad base path
@@ -327,8 +326,8 @@ server.put(commandRegEx, function (req, res, next) {
         // Copies a file or directory
         // Supply destination as full path with file or folder name at end
         // Ex: http://yourserver.com/{key}/copy/folder_a/somefile.txt, destination: /folder_b/somefile.txt
-        case 'copy':
-            var destination = config.base + '/' + req.params.destination;
+        case "copy":
+            var destination = config.base + "/" + req.params.destination;
             if (checkPath(path) && checkPath(destination)) {
                 fs.copy(path, destination, function(err){
                     if (err) {
@@ -356,8 +355,8 @@ server.put(commandRegEx, function (req, res, next) {
  * POST (Update)
  * 
  * Commands:
- * rename - renames a file or folder (using param 'name')
- * save - saves contents to a file (using param 'data')
+ * rename - renames a file or folder (using param "name")
+ * save - saves contents to a file (using param "data")
  * 
  */
 server.post(commandRegEx, function (req, res, next) {
@@ -366,23 +365,23 @@ server.post(commandRegEx, function (req, res, next) {
     checkReq(config, req, res);
     
     // Set path
-    var path = config.base + '/' + req.params[2];
+    var path = config.base + "/" + req.params[2];
     
     switch (req.params[1]) {
         
         // Rename a file or directory
-        case 'rename':
+        case "rename":
             
             var base_path = getBasePath(path);
             
-            fs.rename(path,base_path + '/' + req.params.name, function () {
+            fs.rename(path,base_path + "/" + req.params.name, function () {
                 resSuccess(null, res);
             });
             
             break;
         
         // Saves contents to a file
-        case 'save':
+        case "save":
             
             // Make sure it exists
             if (fs.existsSync(path)) {
@@ -424,7 +423,7 @@ server.del(pathRegEx, function (req, res, next) {
     checkReq(config, req, res);
     
     // Set path
-    var path = config.base + '/' + req.params[1];
+    var path = config.base + "/" + req.params[1];
     
     // Make sure it exists
     if (fs.existsSync(path)) {
@@ -440,11 +439,13 @@ server.del(pathRegEx, function (req, res, next) {
         resError(103, null, res);
     }
     
+    return next();
+    
 });
 
 /**
  * START SERVER
  */
 server.listen(config.port, function () {
-    console.log('%s listening at %s', server.name, server.url);
+    console.log("%s listening at %s", server.name, server.url);
 });
