@@ -194,7 +194,7 @@ fsapi.rename(path, new_name, callback);
 fsapi.delete(path, callback);
 ```
 
-Callbacks for each method returns the response from the server by passing in the `data` argument.
+Callbacks for each method returns the response from the server (validated by default, see below) by passing in the `res` argument.
 
 ### Validate
 

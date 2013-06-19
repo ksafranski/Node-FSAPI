@@ -57,7 +57,7 @@
             editor.getSession().setMode("ace/mode/javascript");
             editor.setShowPrintMargin = false;
             
-            editor.setValue("// Set config => url, key\nfsapi.config('http://"+document.domain+":8080', '12345');\n\n//List contents of root dir\nfsapi.list('/', function (data) {\n    output.setValue(JSON.stringify(data, null, 4));\n});");
+            editor.setValue("// Set config => url, key\nfsapi.config('http://"+document.domain+":8080', '12345');\n\n//List contents of root dir\nfsapi.list('/', function (res) {\n    output.setValue(JSON.stringify(res, null, 4));\n});");
             editor.gotoLine(1);
             
             // Setup Output

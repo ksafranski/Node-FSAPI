@@ -49,9 +49,9 @@ var fsapi = {
             url: url,
             type: type,
             data: params,
-            success: function (data) {
-                data = JSON.parse(data);
-                (_this.config().fsapiValidate) ? fn(_this.validate(data)) : fn(data);
+            success: function (res) {
+                res = JSON.parse(res);
+                (_this.config().fsapiValidate) ? fn(_this.validate(res)) : fn(res);
             },
             error: function () {
                 fn("{ \"status\": \"failure\" }");
