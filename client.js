@@ -44,23 +44,13 @@ var fsapi = {
             type: type,
             data: params,
             success: function (data) {
-                fn(data);
+                fn(JSON.parse(data));
             },
             error: function () {
                 console.error('FSAPI CONNECT ERROR');
                 return false;
             }
         });
-    },
-    
-    /**
-     * Validate
-     * 
-     * Parse and validate responses
-     */
-     
-    validate: function (data) {
-        
     },
     
     /**
@@ -91,7 +81,12 @@ var fsapi = {
     
     // Performs copy, then delete original
     move: function (path, destination, fn) {
-        this.copy(path, destination, fn);
+        var _this = this;
+        this.copy(path, destination, function (data) {
+            if (data.status === 'success') {
+                _this.delete(path, fn);   
+            }
+        });
     },
     
     /**
@@ -114,12 +109,12 @@ var fsapi = {
     
     save: function (path, data, fn) {
         var url = this.config().url + '/' + this.config().key + '/save/' + path;
-        this.request(url, 'POST', { data: data }, fn); 
+        this.request(url, 'POST', { data: data }, fn);
     },
     
     rename: function (path, name, fn) {
         var url = this.config().url + '/' + this.config().key + '/rename/' + path;
-        this.request(url, 'POST', { name: name }, fn); 
+        this.request(url, 'POST', { name: name }, fn);
     },
     
     /**
@@ -127,8 +122,8 @@ var fsapi = {
      */
     
     delete: function (path, fn) {
-        var url = this.config().url + '/' + this.config().key + '/' + path;
-        this.request(url, 'DELETE', null, fn); 
+        var url = this.config().url + '/' + this.config().key + '/'+ path;
+        this.request(url, 'DELETE', { name: name }, fn);
     },
     
     /**
@@ -191,7 +186,7 @@ var fsapi = {
                     value = encodeURIComponent(tmp_data[param]);
                     if (param_count === 0) {
                         xhr.data = name + "=" + value;
-                    } else {
+} else {
                         xhr.data += "&" + name + "=" + value;
                     }
                     param_count++;

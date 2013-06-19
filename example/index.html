@@ -2,14 +2,84 @@
     
     <head>
         <title>Node-FSAPI</title>
+        
+        <style>
+            
+            html, body {
+                width: 700px;
+                margin: 0 auto;
+                font: 12px normal Arial, Helvetica, sans-serif; 
+            }
+            
+            body { padding-top: 100px; }
+            
+            #editor, #editorContainer {
+                display: block;
+                width: 700px;
+                height: 250px;
+                font-size: 15px;
+            }
+            
+            #output {
+                width: 700px;
+                height: 250px;
+                background-color: #272822;
+                color: #fff;
+                font: 14px normal "Courier New", Courier, monospace;
+                overflow: scroll;
+            }
+            
+        </style>
+        
     </head>
     
-    <body style="font: 12px normal Arial, Helvetica, sans-serif; text-align: center; padding-top: 100px;">
+    <body>
         
         <h1>Node-FSAPI Testing</h1>
-        <p>It's probably best you use your console...</p>
+
+<h2>Test Code:</h2>
+<div id="editorContainer">
+<div id="editor">// Set config => url, key
+fsapi.config("http://www.website.com:8080", "12345");
+
+// List contents of root dir
+fsapi.list('/', function (data) {
+    var outputBlock = document.getElementById('output');
+    outputBlock.innerHTML = JSON.stringify(data, null, 4);
+});
+</div>
+</div>
+
+<button id="run">Run Code</button>
+
+<h2>Output:</h2>
+<pre id="output"></pre>
         
         <script src="../client.js"></script>
+        <script src="http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+        <script>
+            
+            // Setup editor
+            
+            var editor = ace.edit("editor"); 
+            editor.setTheme("ace/theme/twilight"); 
+            editor.getSession().setMode("ace/mode/javascript");
+            editor.setShowPrintMargin = false;
+            
+            
+            // Process
+            function runCode () {
+                var code = editor.getValue(),
+                    outputBlock = document.getElementById('output');
+                outputBlock.innerHTML = 'Loading...';
+                eval(code); 
+            }
+            
+            var runner = document.getElementById('run');
+            runner.addEventListener("click", runCode, false);
+            
+            
+        </script>    
     </body>
     
 </html>

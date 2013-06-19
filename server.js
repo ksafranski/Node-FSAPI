@@ -226,7 +226,7 @@ server.get(commandRegEx, function (req, res, next) {
                     // Function to build item for output objects
                     var createItem = function (current, relpath, type, link) {
                         return {
-                            path: relpath,
+                            path: relpath.replace('//','/'),
                             type: type,
                             size: fs.lstatSync(current).size,
                             atime: fs.lstatSync(current).atime.getTime(),
