@@ -12,12 +12,12 @@ var fsapi = {
         
         if (arguments.length) {
             // Set values
-            this.store('fsapiUrl', arguments[0]);
-            this.store('fsapiKey', arguments[1]);
+            this.store("fsapiUrl", arguments[0]);
+            this.store("fsapiKey", arguments[1]);
         } else {
             return {
-               url: this.store('fsapiUrl'),
-               key: this.store('fsapiKey')
+               url: this.store("fsapiUrl"),
+               key: this.store("fsapiKey")
             };
         }
         
@@ -28,8 +28,8 @@ var fsapi = {
      */
     
     disconnect: function () {
-        this.store('fsapiUrl', null);
-        this.store('fsapiKey', null);
+        this.store("fsapiUrl", null);
+        this.store("fsapiKey", null);
     },
     
     /**
@@ -47,7 +47,7 @@ var fsapi = {
                 fn(JSON.parse(data));
             },
             error: function () {
-                fn('{ "status": "failure" }');
+                fn("{ \"status\": \"failure\" }");
             }
         });
     },
@@ -58,7 +58,7 @@ var fsapi = {
      
     validate: function (res) {
         var resObj = JSON.parse(res);
-        if (resObj.status === 'success') {
+        if (resObj.status === "success") {
             if (resObj.data===null) {
                 // No data, but successful
                 return true;
@@ -76,13 +76,13 @@ var fsapi = {
      */
     
     open: function (path, fn) {
-        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/file/' + path;
-        this.request(url, 'GET', null, fn);
+        var url = this.config().fsapiUrl + "/" + this.config().fsapiKey + "/file/" + path;
+        this.request(url, "GET", null, fn);
     },
     
     list: function (path, fn) {
-        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/dir/' + path;
-        this.request(url, 'GET', null, fn);
+        var url = this.config().fsapiUrl + "/" + this.config().fsapiKey + "/dir/" + path;
+        this.request(url, "GET", null, fn);
     },
     
     /**
@@ -91,31 +91,31 @@ var fsapi = {
     
     // Create handler
     create: function (path, type, fn) {
-        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/' + type + '/' + path;
-        this.request(url, 'PUT', null, fn);
+        var url = this.config().fsapiUrl + "/" + this.config().fsapiKey + "/" + type + "/" + path;
+        this.request(url, "PUT", null, fn);
     },
     
     // Proxy for create (file)
     createFile: function (path, fn) {
-        this.create(path, 'file', fn);
+        this.create(path, "file", fn);
     },
     
     // Proxy for create (dir)
     createDirectory: function (path, fn) {
-        this.create(path, 'dir', fn);
+        this.create(path, "dir", fn);
     },
     
     // Copy file or directory
     copy: function (path, destination, fn) {
-        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/copy/' + path;
-        this.request(url, 'PUT', { destination: destination }, fn);
+        var url = this.config().fsapiUrl + "/" + this.config().fsapiKey + "/copy/" + path;
+        this.request(url, "PUT", { destination: destination }, fn);
     },
     
     // Performs copy, then delete original
     move: function (path, destination, fn) {
         var _this = this;
         this.copy(path, destination, function (data) {
-            if (data.status === 'success') {
+            if (data.status === "success") {
                 _this.delete(path, fn);   
             } else {
                 fn(data);
@@ -128,13 +128,13 @@ var fsapi = {
      */
     
     save: function (path, data, fn) {
-        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/save/' + path;
-        this.request(url, 'POST', { data: data }, fn);
+        var url = this.config().fsapiUrl + "/" + this.config().fsapiKey + "/save/" + path;
+        this.request(url, "POST", { data: data }, fn);
     },
     
     rename: function (path, name, fn) {
-        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/rename/' + path;
-        this.request(url, 'POST', { name: name }, fn);
+        var url = this.config().fsapiUrl + "/" + this.config().fsapiKey + "/rename/" + path;
+        this.request(url, "POST", { name: name }, fn);
     },
     
     /**
@@ -142,8 +142,8 @@ var fsapi = {
      */
     
     delete: function (path, fn) {
-        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/'+ path;
-        this.request(url, 'DELETE', { name: name }, fn);
+        var url = this.config().fsapiUrl + "/" + this.config().fsapiKey + "/"+ path;
+        this.request(url, "DELETE", { name: name }, fn);
     },
     
     /**
@@ -281,9 +281,9 @@ var fsapi = {
      * LocalStorage with polyfill support via cookies
      * 
      * @param {String} key The key or identifier for the store
-     * @param {String|Object} [value] Contents of the store, blank to return, 'null' to clear
+     * @param {String|Object} [value] Contents of the store, blank to return, "null" to clear
      * 
-     * Specify a string/object value to `set`, none to `get`, and 'null' to `clear`
+     * Specify a string/object value to `set`, none to `get`, and "null" to `clear`
      */
     store: function (key, value) {
 
@@ -359,8 +359,6 @@ var fsapi = {
             if (c.indexOf(nameEQ) === 0) { return c.substring(nameEQ.length, c.length); }
         }
         return null;
-    }
-    
-    
+    }  
     
 };

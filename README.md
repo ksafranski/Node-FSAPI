@@ -155,6 +155,10 @@ fsapi.store('fsapiUrl', {new-value});
 fsapi.store('fsapiKey', {new-value});
 ```
 
+### Cleanup / Disconnect
+
+To remove the key and url from localStorage simply call `fsapi.disconnect();`.
+
 ### Methods
 
 The following methods are natively available, but can easily be expanded upon:
