@@ -12,12 +12,12 @@ var fsapi = {
         
         if (arguments.length) {
             // Set values
-            this.store('url', arguments[0]);
-            this.store('key', arguments[1]);
+            this.store('fsapiUrl', arguments[0]);
+            this.store('fsapiKey', arguments[1]);
         } else {
             return {
-               url: this.store('url'),
-               key: this.store('key')
+               url: this.store('fsapiUrl'),
+               key: this.store('fsapiKey')
             };
         }
         
@@ -28,8 +28,8 @@ var fsapi = {
      */
     
     disconnect: function () {
-        this.store('url', null);
-        this.store('key', null);
+        this.store('fsapiUrl', null);
+        this.store('fsapiKey', null);
     },
     
     /**
@@ -54,12 +54,26 @@ var fsapi = {
     },
     
     /**
+     * Read (GET)
+     */
+    
+    open: function (path, fn) {
+        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/file/' + path;
+        this.request(url, 'GET', null, fn);
+    },
+    
+    list: function (path, fn) {
+        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/dir/' + path;
+        this.request(url, 'GET', null, fn);
+    },
+    
+    /**
      * Create (PUT)
      */
     
     // Create handler
     create: function (path, type, fn) {
-        var url = this.config().url + '/' + this.config().key + '/' + type + '/' + path;
+        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/' + type + '/' + path;
         this.request(url, 'PUT', null, fn);
     },
     
@@ -69,13 +83,13 @@ var fsapi = {
     },
     
     // Proxy for create (dir)
-    createFolder: function (path, fn) {
+    createDirectory: function (path, fn) {
         this.create(path, 'dir', fn);
     },
     
     // Copy file or directory
     copy: function (path, destination, fn) {
-        var url = this.config().url + '/' + this.config().key + '/copy/' + path;
+        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/copy/' + path;
         this.request(url, 'PUT', { destination: destination }, fn);
     },
     
@@ -92,30 +106,16 @@ var fsapi = {
     },
     
     /**
-     * Read (GET)
-     */
-    
-    open: function (path, fn) {
-        var url = this.config().url + '/' + this.config().key + '/file/' + path;
-        this.request(url, 'GET', null, fn);
-    },
-    
-    list: function (path, fn) {
-        var url = this.config().url + '/' + this.config().key + '/dir/' + path;
-        this.request(url, 'GET', null, fn);
-    },
-    
-    /**
      * Update (POST)
      */
     
     save: function (path, data, fn) {
-        var url = this.config().url + '/' + this.config().key + '/save/' + path;
+        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/save/' + path;
         this.request(url, 'POST', { data: data }, fn);
     },
     
     rename: function (path, name, fn) {
-        var url = this.config().url + '/' + this.config().key + '/rename/' + path;
+        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/rename/' + path;
         this.request(url, 'POST', { name: name }, fn);
     },
     
@@ -124,7 +124,7 @@ var fsapi = {
      */
     
     delete: function (path, fn) {
-        var url = this.config().url + '/' + this.config().key + '/'+ path;
+        var url = this.config().fsapiUrl + '/' + this.config().fsapiKey + '/'+ path;
         this.request(url, 'DELETE', { name: name }, fn);
     },
     

@@ -131,3 +131,61 @@ On an erroroneous request the server will respond with the following JSON format
   "raw": "{raw error message from node}"
 }
 ```
+
+## Working with the Client Methods
+
+The `client.js` file provides method for easily connecting to and interacting with the server.
+
+### Config
+
+Initially it is important to define the connection information, which is done through the following:
+
+```
+fsapi.config("http://yourserver:port","api-key");
+```
+
+The config process (with arguments) sets these values into localStorage (with Cookie fallback). Calling `fsapi.config()` without 
+arguments will return an object with the url and key. You can change either value individually using:
+
+```
+// Set new URL
+fsapi.store('fsapiUrl', {new-value});
+
+// Set new Key
+fsapi.store('fsapiKey', {new-value});
+```
+
+### Methods
+
+The following methods are natively available, but can easily be expanded upon:
+
+```
+// List Contents of Directory
+fsapi.list(path, callback);
+
+// Return Contents of File
+fsapi.open(path, callback);
+
+// Create a New File
+fsapi.createFile(path, callback);
+
+// Create a New Directory
+fsapi.createDirectory(path, callback);
+
+// Create a Copy of a File or Directory (recursive)
+fsapi.copy(path, destination, callback);
+
+// Move a File or Directory (Cut+Paste)
+fsapi.move(path, destination, callback);
+
+// Save Contents to a File
+fsapi.save(path, contents, callback);
+
+// Rename a File or Directory
+fsapi.rename(path, new_name, callback);
+
+// Delete a File or Directory
+fsapi.delete(path, callback);
+```
+
+Callbacks for each method returns the response from the server by passing in the `data` argument.
