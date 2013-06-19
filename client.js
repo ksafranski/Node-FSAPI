@@ -47,10 +47,28 @@ var fsapi = {
                 fn(JSON.parse(data));
             },
             error: function () {
-                console.error('FSAPI CONNECT ERROR');
-                return false;
+                fn('{ "status": "failure" }');
             }
         });
+    },
+    
+    /**
+     * Validate Response
+     */
+     
+    validate: function (res) {
+        var resObj = JSON.parse(res);
+        if (resObj.status === 'success') {
+            if (resObj.data===null) {
+                // No data, but successful
+                return true;
+            } else {
+                // Success with data
+                return resObj.data;
+            }
+        } else {
+            return false;
+        }
     },
     
     /**

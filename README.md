@@ -189,3 +189,16 @@ fsapi.delete(path, callback);
 ```
 
 Callbacks for each method returns the response from the server by passing in the `data` argument.
+
+### Validate
+
+If you do not require the response object, the `data` argument response can be run through the following:
+
+```
+fsapi.validate(data);
+```
+
+For a sucessful response this method will return boolean `true`, or in cases such as `.list()` and `.open()` will return the 
+data from the response.
+
+On error or failure, the response from `.validate()` will be boolean `false`.
