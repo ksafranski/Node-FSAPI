@@ -24,7 +24,7 @@ var config = {
     // Port designation
     port: 8080,
     // Base directory
-    base: "testdir",
+    base: "example/base",
     // Default create mode
     cmode: "0755"
 };
@@ -63,6 +63,10 @@ if (config.ssl.key && config.ssl.cert) {
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
+
+server.defaultResponseHeaders = function(data) {
+  this.header('Access-Control-Allow-Origin', '*');
+};
 
 // Regular Expressions
 var commandRegEx = /^\/([a-zA-Z0-9_\.~-]+)\/([a-zA-Z0-9_\.~-]+)\/(.*)/,  // /{key}/{command}/{path}
@@ -117,6 +121,10 @@ var checkReq = function (config, req, res) {
         res.send(401);
         return false;
     }
+    
+    // Set access control headers
+    res.header('Access-Control-Allow-Origin', '*');
+    
     return true;
 };
 

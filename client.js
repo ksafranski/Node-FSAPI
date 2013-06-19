@@ -48,9 +48,10 @@ var fsapi = {
     
     // Create handler
     create: function (path, type) {
-        var _this = this;
+        var _this = this,
+            url = this.config().url + '/' + this.config().key + '/' + type + '/' + path;
         this.ajax({
-            url: this.config.url() + '/' + this.config().key + '/' + type + '/' + path,
+            url: url,
             type: 'GET',
             success: function (data) {
                 _this.validate(data);
@@ -91,7 +92,20 @@ var fsapi = {
     },
     
     list: function (path) {
-        
+        var _this = this,
+            url = this.config().url + '/' + this.config().key + '/dir/' + path;
+        this.ajax({
+            url: url,
+            type: 'GET',
+            success: function (data) {
+                console.log(data);
+                _this.validate(data);
+            },
+            error: function () {
+                console.error('FSAPI CONNECT ERROR');
+                return false;
+            }
+        });
     },
     
     /**
