@@ -85,12 +85,13 @@ var fsapi = {
     
     // Copy file or directory
     copy: function (path, destination, fn) {
-        
+        var url = this.config().url + '/' + this.config().key + '/copy/' + path;
+        this.request(url, 'PUT', { destination: destination }, fn);
     },
     
     // Performs copy, then delete original
     move: function (path, destination, fn) {
-        
+        this.copy(path, destination, fn);
     },
     
     /**
@@ -98,7 +99,8 @@ var fsapi = {
      */
     
     open: function (path, fn) {
-        
+        var url = this.config().url + '/' + this.config().key + '/file/' + path;
+        this.request(url, 'GET', null, fn);
     },
     
     list: function (path, fn) {
@@ -110,12 +112,14 @@ var fsapi = {
      * Update (POST)
      */
     
-    save: function (path, fn) {
-        
+    save: function (path, data, fn) {
+        var url = this.config().url + '/' + this.config().key + '/save/' + path;
+        this.request(url, 'POST', { data: data }, fn); 
     },
     
     rename: function (path, name, fn) {
-        
+        var url = this.config().url + '/' + this.config().key + '/rename/' + path;
+        this.request(url, 'POST', { name: name }, fn); 
     },
     
     /**
@@ -123,7 +127,8 @@ var fsapi = {
      */
     
     delete: function (path, fn) {
-        
+        var url = this.config().url + '/' + this.config().key + '/' + path;
+        this.request(url, 'DELETE', null, fn); 
     },
     
     /**
