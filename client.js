@@ -33,6 +33,27 @@ var fsapi = {
     },
     
     /**
+     * Request
+     * 
+     * Makes request
+     */
+     
+    request: function (url, type, params, fn) {
+        this.ajax({
+            url: url,
+            type: type,
+            data: params,
+            success: function (data) {
+                fn(data);
+            },
+            error: function () {
+                console.error('FSAPI CONNECT ERROR');
+                return false;
+            }
+        });
+    },
+    
+    /**
      * Validate
      * 
      * Parse and validate responses
@@ -47,39 +68,28 @@ var fsapi = {
      */
     
     // Create handler
-    create: function (path, type) {
-        var _this = this,
-            url = this.config().url + '/' + this.config().key + '/' + type + '/' + path;
-        this.ajax({
-            url: url,
-            type: 'GET',
-            success: function (data) {
-                _this.validate(data);
-            },
-            error: function () {
-                console.error('FSAPI CONNECT ERROR');
-                return false;
-            }
-        });
+    create: function (path, type, fn) {
+        var url = this.config().url + '/' + this.config().key + '/' + type + '/' + path;
+        this.request(url, 'PUT', null, fn);
     },
     
     // Proxy for create (file)
-    createFile: function (path) {
-        this.create(path, 'file');
+    createFile: function (path, fn) {
+        this.create(path, 'file', fn);
     },
     
     // Proxy for create (dir)
-    createFolder: function (path) {
-        this.create(path, 'dir');
+    createFolder: function (path, fn) {
+        this.create(path, 'dir', fn);
     },
     
     // Copy file or directory
-    copy: function (path, destination) {
+    copy: function (path, destination, fn) {
         
     },
     
     // Performs copy, then delete original
-    move: function (path, destination) {
+    move: function (path, destination, fn) {
         
     },
     
@@ -87,36 +97,24 @@ var fsapi = {
      * Read (GET)
      */
     
-    open: function (path) {
+    open: function (path, fn) {
         
     },
     
-    list: function (path) {
-        var _this = this,
-            url = this.config().url + '/' + this.config().key + '/dir/' + path;
-        this.ajax({
-            url: url,
-            type: 'GET',
-            success: function (data) {
-                console.log(data);
-                _this.validate(data);
-            },
-            error: function () {
-                console.error('FSAPI CONNECT ERROR');
-                return false;
-            }
-        });
+    list: function (path, fn) {
+        var url = this.config().url + '/' + this.config().key + '/dir/' + path;
+        this.request(url, 'GET', null, fn);
     },
     
     /**
      * Update (POST)
      */
     
-    save: function (path) {
+    save: function (path, fn) {
         
     },
     
-    rename: function (path, name) {
+    rename: function (path, name, fn) {
         
     },
     
@@ -124,14 +122,12 @@ var fsapi = {
      * Delete (DELETE)
      */
     
-    delete: function (path) {
+    delete: function (path, fn) {
         
     },
     
     /**
      * AJAX Handler
-     * @param {String} url URL of the resource
-     * @param {Object} [config] Configuration object passed into request
      * 
      * **Configuration Object:**
      * 
