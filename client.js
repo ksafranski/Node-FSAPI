@@ -20,6 +20,16 @@ var fsapi = {
                key: this.store('key')
             };
         }
+        
+    },
+    
+    /**
+     * Disconnect, remove local stores
+     */
+    
+    disconnect: function () {
+        this.store('url', null);
+        this.store('key', null);
     },
     
     /**
