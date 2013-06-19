@@ -14,10 +14,15 @@ var fsapi = {
             // Set values
             this.store("fsapiUrl", arguments[0]);
             this.store("fsapiKey", arguments[1]);
+            
+            // Defaults validation to true
+            arguments[2] = arguments[2] || true;
+            this.store("fsapiValidate", arguments[2]);
         } else {
             return {
-               url: this.store("fsapiUrl"),
-               key: this.store("fsapiKey")
+               fsapiUrl: this.store("fsapiUrl"),
+               fsapiKey: this.store("fsapiKey"),
+               fsapiValidate: this.store("fsapiValidate")
             };
         }
         
@@ -39,12 +44,14 @@ var fsapi = {
      */
      
     request: function (url, type, params, fn) {
+        var _this = this;
         this.ajax({
             url: url,
             type: type,
             data: params,
             success: function (data) {
-                fn(JSON.parse(data));
+                data = JSON.parse(data);
+                (_this.config().fsapiValidate) ? fn(_this.validate(data)) : fn(data);
             },
             error: function () {
                 fn("{ \"status\": \"failure\" }");
@@ -57,16 +64,16 @@ var fsapi = {
      */
      
     validate: function (res) {
-        var resObj = JSON.parse(res);
-        if (resObj.status === "success") {
-            if (resObj.data===null) {
+        if (res.status === "success") {
+            if (!res.data) {
                 // No data, but successful
                 return true;
             } else {
                 // Success with data
-                return resObj.data;
+                return res.data;
             }
         } else {
+            console.log('FAIL');
             return false;
         }
     },

@@ -141,11 +141,13 @@ The `client.js` file provides method for easily connecting to and interacting wi
 Initially it is important to define the connection information, which is done through the following:
 
 ```
-fsapi.config("http://yourserver:port","api-key");
+fsapi.config("http://yourserver:port", "api-key", {OPTIONAL - Bool 'Validate'});
 ```
 
-The config process (with arguments) sets these values into localStorage (with Cookie fallback). Calling `fsapi.config()` without 
-arguments will return an object with the url and key. You can change either value individually using:
+The config process (with arguments) sets these values into localStorage (with Cookie fallback). There is a third argument `validate` which defaults to `true`. 
+If set to `false` in the config call above the entire response from the server will be returned and must be parsed manually.
+
+Calling `fsapi.config()` without arguments will return an object with the url and key. You can change either value individually using:
 
 ```
 // Set new URL
@@ -196,7 +198,7 @@ Callbacks for each method returns the response from the server by passing in the
 
 ### Validate
 
-If you do not require the response object, the `data` argument response can be run through the following:
+The fsapi validate method is used to parse the response from the server, this method is called by default unless changed in the `fsapi.config` method.
 
 ```
 fsapi.validate(data);
