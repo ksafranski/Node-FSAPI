@@ -85,6 +85,8 @@ var fsapi = {
         this.copy(path, destination, function (data) {
             if (data.status === 'success') {
                 _this.delete(path, fn);   
+            } else {
+                fn(data);
             }
         });
     },

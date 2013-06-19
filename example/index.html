@@ -1,7 +1,7 @@
 <html>
     
     <head>
-        <title>Node-FSAPI</title>
+        <title>Node-FSAPI Sandbox</title>
         
         <style>
             
@@ -23,10 +23,9 @@
             #output {
                 width: 700px;
                 height: 250px;
-                background-color: #272822;
+                background-color: #141414;
                 color: #fff;
-                font: 14px normal "Courier New", Courier, monospace;
-                overflow: scroll;
+                font: 13px normal "Courier New", Courier, monospace;
             }
             
         </style>
@@ -37,41 +36,44 @@
         
         <h1>Node-FSAPI Testing</h1>
 
-<h2>Test Code:</h2>
-<div id="editorContainer">
-<div id="editor">// Set config => url, key
-fsapi.config("http://www.website.com:8080", "12345");
-
-// List contents of root dir
-fsapi.list('/', function (data) {
-    var outputBlock = document.getElementById('output');
-    outputBlock.innerHTML = JSON.stringify(data, null, 4);
-});
-</div>
-</div>
-
-<button id="run">Run Code</button>
-
-<h2>Output:</h2>
-<pre id="output"></pre>
+        <h2>Test Code:</h2>
+        <div id="editorContainer">
+        <div id="editor"></div>
+        </div>
+        
+        <button id="run">Run Code</button>
+        
+        <h2>Output:</h2>
+        <div id="output"></div>
         
         <script src="../client.js"></script>
         <script src="http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
         <script>
             
-            // Setup editor
+            // Setup Editor
             
             var editor = ace.edit("editor"); 
             editor.setTheme("ace/theme/twilight"); 
             editor.getSession().setMode("ace/mode/javascript");
             editor.setShowPrintMargin = false;
             
+            editor.setValue("// Set config => url, key\nfsapi.config('http://"+document.domain+":8080', '12345');\n\n//List contents of root dir\nfsapi.list('/', function (data) {\n    output.setValue(JSON.stringify(data, null, 4));\n});");
+            editor.gotoLine(1);
+            
+            // Setup Output
+            
+            var output = ace.edit("output"); 
+            output.setTheme("ace/theme/twilight"); 
+            output.getSession().setMode("ace/mode/javascript");
+            output.setShowPrintMargin = false;
+            
+            output.setReadOnly(true);
+            
             
             // Process
             function runCode () {
-                var code = editor.getValue(),
-                    outputBlock = document.getElementById('output');
-                outputBlock.innerHTML = 'Loading...';
+                var code = editor.getValue();
+                output.setValue('Loading...');
                 eval(code); 
             }
             
