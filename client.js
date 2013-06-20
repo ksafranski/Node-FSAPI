@@ -3,7 +3,7 @@ var fsapi = {
     /**
      * Config
      * 
-     * Set: fsapi.config({url},{key});
+     * Set: fsapi.config({url}, {key}, {optional - 'validate'});
      * Get: fsapi.config();
      * 
      */
@@ -213,7 +213,7 @@ var fsapi = {
                     value = encodeURIComponent(tmp_data[param]);
                     if (param_count === 0) {
                         xhr.data = name + "=" + value;
-} else {
+                    } else {
                         xhr.data += "&" + name + "=" + value;
                     }
                     param_count++;
