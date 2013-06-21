@@ -281,7 +281,7 @@ server.get(commandRegEx, function (req, res, next) {
 });
 
 /**
- * PUT (Create)
+ * POST (Create)
  * 
  * Commands:
  * dir - creates a new directory
@@ -289,7 +289,7 @@ server.get(commandRegEx, function (req, res, next) {
  * copy - copies a file or dirextory (to path at param "destination")
  * 
  */
-server.put(commandRegEx, function (req, res, next) {
+server.post(commandRegEx, function (req, res, next) {
     
     // Check request
     checkReq(config, req, res);
@@ -356,14 +356,14 @@ server.put(commandRegEx, function (req, res, next) {
 });
 
 /**
- * POST (Update)
+ * PUT (Update)
  * 
  * Commands:
  * rename - renames a file or folder (using param "name")
  * save - saves contents to a file (using param "data")
  * 
  */
-server.post(commandRegEx, function (req, res, next) {
+server.put(commandRegEx, function (req, res, next) {
     
     // Check request
     checkReq(config, req, res);

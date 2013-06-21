@@ -64,35 +64,35 @@ Requests to the server are made via RESTful methods - GET, PUT, POST and DELETE.
 
 `GET => {server}:{port}/{key}/file/{path}`
 
-### PUT (Create)
+### POST (Create)
 
 **Create Directory**
 
-`PUT => {server}:{port}/{key}/dir/{path}`
+`POST => {server}:{port}/{key}/dir/{path}`
 
 **Create File**
 
-`PUT => {server}:{port}/{key}/file/{path}`
+`POST => {server}:{port}/{key}/file/{path}`
 
 **Copy Directory or File**
 
-`PUT => {server}:{port}/{key}/copy/{path}`
+`POST => {server}:{port}/{key}/copy/{path}`
 
-PUT parameter `destination` required with the FULL detination path
+`POST` parameter `destination` required with the FULL detination path
 
-### POST (Update)
+### PUT (Update)
 
 **Rename File or Directory**
 
-`POST => {server}:{port}/{key}/rename/{path}`
+`PUT => {server}:{port}/{key}/rename/{path}`
 
-POST parameter `name` required with the new file or directory name (no path required)
+`PUT` parameter `name` required with the new file or directory name (no path required)
 
 **Save Contents to File**
 
-`POST => {server}:{port}/{key}/save/{path}`
+`PUT => {server}:{port}/{key}/save/{path}`
 
-POST parameter `data` is required with the contents to be saved
+`PUT` parameter `data` is required with the contents to be saved
 
 ### DELETE
 

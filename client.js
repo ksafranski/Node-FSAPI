@@ -93,13 +93,13 @@ var fsapi = {
     },
     
     /**
-     * Create (PUT)
+     * Create (POST)
      */
     
     // Create handler
     create: function (path, type, fn) {
         var url = this.config().fsapiUrl + "/" + this.config().fsapiKey + "/" + type + "/" + path;
-        this.request(url, "PUT", null, fn);
+        this.request(url, "POST", null, fn);
     },
     
     // Proxy for create (file)
@@ -115,7 +115,7 @@ var fsapi = {
     // Copy file or directory
     copy: function (path, destination, fn) {
         var url = this.config().fsapiUrl + "/" + this.config().fsapiKey + "/copy/" + path;
-        this.request(url, "PUT", { destination: destination }, fn);
+        this.request(url, "POST", { destination: destination }, fn);
     },
     
     // Performs copy, then delete original
@@ -131,17 +131,17 @@ var fsapi = {
     },
     
     /**
-     * Update (POST)
+     * Update (PUT)
      */
     
     save: function (path, data, fn) {
         var url = this.config().fsapiUrl + "/" + this.config().fsapiKey + "/save/" + path;
-        this.request(url, "POST", { data: data }, fn);
+        this.request(url, "PUT", { data: data }, fn);
     },
     
     rename: function (path, name, fn) {
         var url = this.config().fsapiUrl + "/" + this.config().fsapiKey + "/rename/" + path;
-        this.request(url, "POST", { name: name }, fn);
+        this.request(url, "PUT", { name: name }, fn);
     },
     
     /**
