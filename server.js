@@ -113,13 +113,15 @@ var checkIP = function (config, req) {
  */
  
 var checkReq = function (config, req, res) {
+    
+    // Set access control headers
+    res.header('Access-Control-Allow-Origin', '*');
+    
+    // Check key and IP
     if(!checkKey(config, req) || !checkIP(config, req)) {
         res.send(401);
         return false;
     }
-    
-    // Set access control headers
-    res.header('Access-Control-Allow-Origin', '*');
     
     return true;
 };
