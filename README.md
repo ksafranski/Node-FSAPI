@@ -1,7 +1,7 @@
 # Node FileSystem API
 
 Node-FSAPI provides a RESTful (CRUD) server for interacting with remote file systems. It relies on 
-GET (Read), PUT (Create), POST (Update), and DELETE (Delete) commands with a plain-language syntax. 
+GET (Read), POST (Create), PUT (Update), and DELETE (Delete) commands with a plain-language syntax. 
 
 ## Getting Started
 
