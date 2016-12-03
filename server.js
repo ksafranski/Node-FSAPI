@@ -222,6 +222,22 @@ var checkPath = function (path) {
  * file - return content of a file
  *
  */
+
+// server.get(commandRegEx, function (req, res, next) {
+//   restify.serveStatic({
+//   	'directory': config.base
+//   });
+//   console.log(req)
+// })
+//
+//
+// server.get(/\/?.*/, function (req, res, next) {
+//   console.log('hi')
+//   restify.serveStatic({
+// 	   'directory': config.base
+//    })
+// });
+
 server.get(commandRegEx, function (req, res, next) {
 
     // Check request
@@ -288,14 +304,17 @@ server.get(commandRegEx, function (req, res, next) {
 
         // Return contents of requested file
         case "file":
-            fs.readFile(path, "utf8", function (err, data) {
-                if (err) {
-                    resError(102, err, res);
-                } else {
-                    resSuccess(data, res);
-                }
-            });
-            break;
+          fs.readFile(path, function (err, data) {
+              if (err) {
+                  resError(102, err, res);
+              } else {
+                  res.writeHead(200, {
+                    'Content-Disposition': 'attachment; filename=' + req.params[2]
+                  });
+                  res.end(data);
+              }
+          });
+          break;
 
         default:
             // Unknown command
