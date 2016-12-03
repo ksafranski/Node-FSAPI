@@ -24,7 +24,7 @@ var config = {
     // Port designation
     port: 8080,
     // Base directory
-    base: "example/base",
+    base: "/tmp",
     // Default create mode
     cmode: "0755"
 };
@@ -32,6 +32,7 @@ var config = {
 
 var fs = require("fs-extra"),
     restify = require("restify"),
+    md5File = require('md5-file'),
     server;
 
 // Determine if SSL is used
@@ -342,9 +343,31 @@ server.post(commandRegEx, function (req, res, next) {
         case "file":
             // Ensure base path
             if (checkPath(path)) {
-                // Base path exists, create file
+              if (req.params.data) {
+                fs.writeFile(path, req.params.data, function(err) {
+                    if(err) {
+                        resError(107, err, res);
+                    } else {
+                        resSuccess(null, res);
+                    }
+                });
+              } else if (req.files && req.files.filedata) {
+                fs.readFile(req.files.filedata.path, function (err, data) {
+                    fs.writeFile(path, data, function (err) {
+                      if(err) {
+                          resError(107, err, res);
+                      } else {
+                          var hash = md5File.sync(path)
+                          resSuccess(hash, res);
+                      }
+                    });
+                });
+              } else {
+                // No file attached, Base path exists, create empty file
                 fs.openSync(path, "w");
                 resSuccess(null, res);
+                resError(106, null, res);
+              }
             } else {
                 // Bad base path
                 resError(103, null, res);
@@ -409,20 +432,34 @@ server.put(commandRegEx, function (req, res, next) {
             break;
 
         // Saves contents to a file
-        case "save":
-
+        case "file":
             // Make sure it exists
             if (fs.existsSync(path)) {
                 // Make sure it's a file
                 if (!fs.lstatSync(path).isDirectory()) {
                     // Write
-                    fs.writeFile(path, req.params.data, function(err) {
-                        if(err) {
-                            resError(107, err, res);
-                        } else {
-                            resSuccess(null, res);
-                        }
-                    });
+                    if (req.params.data) {
+                      fs.writeFile(path, req.params.data, function(err) {
+                          if(err) {
+                              resError(107, err, res);
+                          } else {
+                              resSuccess(null, res);
+                          }
+                      });
+                    } else if (req.files && req.files.filedata) {
+                      fs.readFile(req.files.filedata.path, function (err, data) {
+                          fs.writeFile(path, data, function (err) {
+                            if(err) {
+                                resError(107, err, res);
+                            } else {
+                                var hash = md5File.sync(path)
+                                resSuccess(hash, res);
+                            }
+                          });
+                      });
+                    } else {
+                      resError(106, null, res);
+                    }
                 } else {
                     resError(106, null, res);
                 }
