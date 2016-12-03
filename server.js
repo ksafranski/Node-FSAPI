@@ -223,21 +223,6 @@ var checkPath = function (path) {
  *
  */
 
-// server.get(commandRegEx, function (req, res, next) {
-//   restify.serveStatic({
-//   	'directory': config.base
-//   });
-//   console.log(req)
-// })
-//
-//
-// server.get(/\/?.*/, function (req, res, next) {
-//   console.log('hi')
-//   restify.serveStatic({
-// 	   'directory': config.base
-//    })
-// });
-
 server.get(commandRegEx, function (req, res, next) {
 
     // Check request
