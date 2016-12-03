@@ -1,12 +1,18 @@
 # Node FileSystem API
 
-Node-FSAPI provides a RESTful (CRUD) server for interacting with remote file systems. It relies on 
-GET (Read), POST (Create), PUT (Update), and DELETE (Delete) commands with a plain-language syntax. 
+Node-FSAPI provides a RESTful (CRUD) server for interacting with remote file systems. It relies on
+GET (Read), POST (Create), PUT (Update), and DELETE (Delete) commands with a plain-language syntax.
 
 ## Getting Started
 
-FSAPI provides a single-file `server.js` node controller with 2 core dependencies - [Restify](http://mcavage.github.io/node-restify) 
-and [node-fs-extra](https://github.com/jprichardson/node-fs-extra). The file contains a `config` object which allows for easy configuration.
+FSAPI provides a single-file `server.js` node controller with 2 core dependencies -
+* [Restify](http://mcavage.github.io/node-restify)
+* [node-fs-extra](https://github.com/jprichardson/node-fs-extra). The file contains a `config` object which allows for easy configuration.
+* [md5-file](https://www.npmjs.com/package/md5-file) Calculates an MD5 for the saved file.
+
+### Installation
+
+MacOS: `npm install --no-optional`
 
 ### Security
 
@@ -74,6 +80,30 @@ Requests to the server are made via RESTful methods - GET, PUT, POST and DELETE.
 
 `POST => {server}:{port}/{key}/file/{path}`
 
+
+Examples:
+
+Create an empty file:
+
+```
+curl -X POST  localhost:8080/12345/file/foo.txt
+```
+
+Create a file with a file: (MD5 hash returned for saved file)
+
+```
+$ md5 foo.txt
+MD5 (foo.txt) = 3b1340c072317b95529b826b6696c6ab
+$ curl -X POST  -F filedata=@foo.txt localhost:8080/12345/file/foo.txt
+{"status":"success","data":"3b1340c072317b95529b826b6696c6ab"}
+```
+
+Create a file with text
+
+```
+curl -X POST -F data='{"some": "text"}' localhost:8080/12345/file/foo.txt
+```
+
 **Copy Directory or File**
 
 `POST => {server}:{port}/{key}/copy/{path}`
@@ -90,9 +120,24 @@ Requests to the server are made via RESTful methods - GET, PUT, POST and DELETE.
 
 **Save Contents to File**
 
-`PUT => {server}:{port}/{key}/save/{path}`
+`PUT => {server}:{port}/{key}/file/{path}`
 
-`PUT` parameter `data` is required with the contents to be saved
+Examples:
+
+Update file with file:
+
+```
+$ md5 foo.txt
+MD5 (foo.txt) = 3b1340c072317b95529b826b6696c6ab
+$ curl -X PUT -F filedata=@foo.txt localhost:8080/12345/file/foo.txt
+{"status":"success","data":"3b1340c072317b95529b826b6696c6ab"}
+```
+Update file with text:
+
+```
+curl -X PUT -F data='{"some": "text"}' localhost:8080/12345/file/foo.txt
+{"status":"success","data":null}
+```
 
 ### DELETE
 
@@ -144,7 +189,7 @@ Initially it is important to define the connection information, which is done th
 fsapi.config("http://yourserver:port", "api-key", {OPTIONAL - Bool 'Validate'});
 ```
 
-The config process (with arguments) sets these values into localStorage (with Cookie fallback). There is a third argument `validate` which defaults to `true`. 
+The config process (with arguments) sets these values into localStorage (with Cookie fallback). There is a third argument `validate` which defaults to `true`.
 If set to `false` in the config call above the entire response from the server will be returned and must be parsed manually.
 
 Calling `fsapi.config()` without arguments will return an object with the url and key. You can change either value individually using:
@@ -204,7 +249,7 @@ The fsapi validate method is used to parse the response from the server, this me
 fsapi.validate(data);
 ```
 
-For a sucessful response this method will return boolean `true`, or in cases such as `.list()` and `.open()` will return the 
+For a sucessful response this method will return boolean `true`, or in cases such as `.list()` and `.open()` will return the
 data from the response.
 
 On error or failure, the response from `.validate()` will be boolean `false`.
