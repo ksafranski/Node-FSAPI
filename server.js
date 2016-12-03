@@ -36,27 +36,27 @@ var fs = require("fs-extra"),
 
 // Determine if SSL is used
 if (config.ssl.key && config.ssl.cert) {
-    
+
     // Get CERT
     var https = {
         certificate: fs.readFileSync(config.ssl.cert),
         key: fs.readFileSync(config.ssl.key)
     };
-    
+
     // Config server with SSL
     server = restify.createServer({
         name: "fsapi",
         certificate: https.certificate,
         key: https.key
     });
-    
+
 } else {
-    
+
     // Config non-SSL Server
     server = restify.createServer({
         name: "fsapi"
     });
-    
+
 }
 
 // Additional server config
@@ -106,7 +106,7 @@ var checkKey = function (config, req) {
 /**
  * Check IP (Called by checkReq)
  */
- 
+
 var checkIP = function (config, req) {
     var ip = req.connection.remoteAddress.split("."),
         curIP,
@@ -127,33 +127,33 @@ var checkIP = function (config, req) {
     }
     return false;
 };
- 
+
 
 /**
  * Check Request
  * Checks Key and IP Address
  */
- 
+
 var checkReq = function (config, req, res) {
-    
+
     // Set access control headers
     res.header('Access-Control-Allow-Origin', '*');
-    
+
     // Check key and IP
     if(!checkKey(config, req) || !checkIP(config, req)) {
         res.send(401);
         return false;
     }
-    
+
     return true;
 };
 
 /**
  * Response Error
  */
- 
+
 var resError = function (code, raw, res) {
-    
+
     var codes = {
         100: "Unknown command",
         101: "Could not list files",
@@ -165,16 +165,16 @@ var resError = function (code, raw, res) {
         107: "Could not write to file",
         108: "Could not delete object"
     };
-    
+
     res.send({ "status": "error", "code": code, "message": codes[code], "raw": raw });
     return false;
-    
+
 };
 
 /**
  * Response Success
  */
- 
+
 var resSuccess = function (data, res) {
 
     res.send({ "status": "success", "data": data });
@@ -199,7 +199,7 @@ var merge = function (obj1,obj2) {
 
 var getBasePath = function (path) {
     var base_path = path.split("/");
-        
+
     base_path.pop();
     return base_path.join("/");
 };
@@ -207,7 +207,7 @@ var getBasePath = function (path) {
 /**
  * Check Path
  */
- 
+
 var checkPath = function (path) {
     var base_path = getBasePath(path);
     return fs.existsSync(base_path);
@@ -215,20 +215,20 @@ var checkPath = function (path) {
 
 /**
  * GET (Read)
- * 
+ *
  * Commands:
  * dir - list contents of directory
  * file - return content of a file
- * 
+ *
  */
 server.get(commandRegEx, function (req, res, next) {
-    
+
     // Check request
     checkReq(config, req, res);
-    
+
     // Set path
     var path = config.base + "/" + req.params[2];
-    
+
     switch (req.params[1]) {
         // List contents of directory
         case "dir":
@@ -236,10 +236,10 @@ server.get(commandRegEx, function (req, res, next) {
                 if (err) {
                     resError(101, err, res);
                 } else {
-                    
+
                     // Ensure ending slash on path
                     (path.slice(-1)!=="/") ? path = path + "/" : path = path;
-                
+
                     var output = {},
                         output_dirs = {},
                         output_files = {},
@@ -258,10 +258,10 @@ server.get(commandRegEx, function (req, res, next) {
                             link: link
                         };
                     };
-                    
+
                     // Sort alphabetically
                     files.sort();
-                    
+
                     // Loop through and create two objects
                     // 1. Directories
                     // 2. Files
@@ -272,19 +272,19 @@ server.get(commandRegEx, function (req, res, next) {
                         if (fs.lstatSync(current).isDirectory()) {
                             output_dirs[files[i]] = createItem(current,relpath,"directory",link);
                         } else {
-                            output_files[files[i]] = createItem(current,relpath,"file",link);                            
+                            output_files[files[i]] = createItem(current,relpath,"file",link);
                         }
                     }
-                    
+
                     // Merge so we end up with alphabetical directories, then files
                     output = merge(output_dirs,output_files);
-                    
+
                     // Send output
                     resSuccess(output, res);
                 }
             });
             break;
-        
+
         // Return contents of requested file
         case "file":
             fs.readFile(path, "utf8", function (err, data) {
@@ -295,7 +295,7 @@ server.get(commandRegEx, function (req, res, next) {
                 }
             });
             break;
-            
+
         default:
             // Unknown command
             resError(100, null, res);
@@ -306,26 +306,26 @@ server.get(commandRegEx, function (req, res, next) {
 
 /**
  * POST (Create)
- * 
+ *
  * Commands:
  * dir - creates a new directory
  * file - creates a new file
  * copy - copies a file or dirextory (to path at param "destination")
- * 
+ *
  */
 server.post(commandRegEx, function (req, res, next) {
-    
+
     // Check request
     checkReq(config, req, res);
-    
+
     // Set path
     var path = config.base + "/" + req.params[2];
-    
+
     switch (req.params[1]) {
-        
+
         // Creates a new directory
         case "dir":
-            
+
             // Ensure base path
             if (checkPath(path)) {
                 // Base path exists, create directory
@@ -337,7 +337,7 @@ server.post(commandRegEx, function (req, res, next) {
                 resError(103, null, res);
             }
             break;
-        
+
         // Creates a new file
         case "file":
             // Ensure base path
@@ -350,7 +350,7 @@ server.post(commandRegEx, function (req, res, next) {
                 resError(103, null, res);
             }
             break;
-        
+
         // Copies a file or directory
         // Supply destination as full path with file or folder name at end
         // Ex: http://yourserver.com/{key}/copy/folder_a/somefile.txt, destination: /folder_b/somefile.txt
@@ -370,47 +370,47 @@ server.post(commandRegEx, function (req, res, next) {
                 resError(103, null, res);
             }
             break;
-            
+
         default:
             // Unknown command
             resError(100, null, res);
     }
-    
+
     return next();
 });
 
 /**
  * PUT (Update)
- * 
+ *
  * Commands:
  * rename - renames a file or folder (using param "name")
  * save - saves contents to a file (using param "data")
- * 
+ *
  */
 server.put(commandRegEx, function (req, res, next) {
-    
+
     // Check request
     checkReq(config, req, res);
-    
+
     // Set path
     var path = config.base + "/" + req.params[2];
-    
+
     switch (req.params[1]) {
-        
+
         // Rename a file or directory
         case "rename":
-            
+
             var base_path = getBasePath(path);
-            
+
             fs.rename(path,base_path + "/" + req.params.name, function () {
                 resSuccess(null, res);
             });
-            
+
             break;
-        
+
         // Saves contents to a file
         case "save":
-            
+
             // Make sure it exists
             if (fs.existsSync(path)) {
                 // Make sure it's a file
@@ -429,30 +429,30 @@ server.put(commandRegEx, function (req, res, next) {
             } else {
                 resError(105, null, res);
             }
-            
+
             break;
-        
-            
+
+
         default:
             // Unknown command
             resError(100, null, res);
     }
-    
+
     return next();
-    
+
 });
 
 /**
- * DELETE 
+ * DELETE
  */
 server.del(pathRegEx, function (req, res, next) {
-    
+
     // Check request
     checkReq(config, req, res);
-    
+
     // Set path
     var path = config.base + "/" + req.params[1];
-    
+
     // Make sure it exists
     if (fs.existsSync(path)) {
         // Remove file or directory
@@ -466,9 +466,9 @@ server.del(pathRegEx, function (req, res, next) {
     } else {
         resError(103, null, res);
     }
-    
+
     return next();
-    
+
 });
 
 /**
